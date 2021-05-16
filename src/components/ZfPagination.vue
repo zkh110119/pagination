@@ -28,7 +28,7 @@
     <li>
       <el-link :underline="false" icon="el-icon-refresh-right" @click="emitEvent"></el-link>
     </li>
-    <li style="float: right;">显示{{startNum}}到{{endNum}}条，共{{total}}条</li>
+    <li v-show="total > 0" style="float: right;">显示{{startNum}}到{{endNum}}条，共{{total}}条</li>
   </ul>
 </template>
 
@@ -103,7 +103,7 @@ export default {
   },
   computed: {
     totalPage () {
-      return Math.ceil(this.total / this.pageSize)
+      return this.total === 0 ? 1 : Math.ceil(this.total / this.pageSize)
     },
     startNum () {
       return this.total === 0 ? 0 : this.page ? ((this.page - 1) * this.pageSize + 1) : ((this.oldPage - 1) * this.pageSize + 1)
