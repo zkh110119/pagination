@@ -1,7 +1,8 @@
 <template>
   <ul class="zf-ui-pagination">
-    <li>
+    <li v-for="el in elements" :key="el" :class="{'pull-right':el==='info'}">
       <el-select
+        v-if="el==='sizes'"
         class="zf-ui-pagination-page-size"
         v-model="pageSize"
         :size="'mini'"
@@ -12,26 +13,23 @@
           :label="size"
           :value="size"></el-option>
       </el-select>
-    </li>
-    <li>
       <el-link
+        v-else-if="el==='first'"
         icon="el-icon-d-arrow-left"
         :underline="false"
         @click="first"></el-link>
-    </li>
-    <li>
       <el-link
+        v-else-if="el==='prev'"
         icon="el-icon-arrow-left"
         :underline="false"
         @click="prev"></el-link>
-    </li>
-    <li>
-      <span class="zf-ui-pagination-page-text-prev">
-        第
-      </span>
-    </li>
-    <li>
+      <slot v-else-if="el==='pagePrevText'" name="pagePrev">
+        <span class="zf-ui-pagination-page-text-prev">
+          第
+        </span>
+      </slot>
       <el-input-number
+        v-else-if="el==='page'"
         v-model="page"
         @blur="pageBlur"
         @keyup.enter.native="changePage"
@@ -40,35 +38,31 @@
         :size="'mini'"
         :controls="false"
         class="zf-ui-pagination-page"></el-input-number>
-    </li>
-    <li>
-      <span class="zf-ui-pagination-page-text-next">
-        /{{pages}}页
-      </span>
-    </li>
-    <li>
+      <slot v-else-if="el==='pageNextText'" name="pageNext" :pages="pages">
+        <span class="zf-ui-pagination-page-text-next">
+          /{{pages}}页
+        </span>
+      </slot>
       <el-link
+        v-else-if="el==='next'"
         icon="el-icon-arrow-right"
         :underline="false"
         @click="next">
       </el-link>
-    </li>
-    <li>
       <el-link
+        v-else-if="el==='last'"
         icon="el-icon-d-arrow-right"
         :underline="false"
         @click="last"></el-link>
-    </li>
-    <li>
       <el-link
+        v-else-if="el==='refresh'"
         icon="el-icon-refresh-right"
         :underline="false"
         @click="refresh"></el-link>
-    </li>
-    <li class="pull-right" v-show="total > 0">
-      <span>
-        显示{{from}}到{{to}}条，共{{total}}条
-      </span>
+      <slot v-else-if="el==='info'" name="info" :from="from" :to="to" :total="total" v-show="total>0">
+        <span>显示{{from}}到{{to}}条，共{{total}}条</span>
+      </slot>
+      <span v-else></span>
     </li>
   </ul>
 </template>
@@ -82,14 +76,34 @@ export default {
       type: Number,
       required: true,
       default: 0
+    },
+    // 每页展示多少条数据的集合
+    list: {
+      type: Array,
+      default: function () {
+        return [20, 50, 100, 200]
+      }
+    },
+    // 每页展示多少数据
+    size: {
+      type: Number,
+      default: 50
+    },
+    // 元素展示顺序
+    els: {
+      type: Array,
+      default: function () {
+        return ['sizes', 'first', 'prev', 'pagePrevText', 'page', 'pageNextText', 'next', 'last', 'refresh', 'info']
+      }
     }
   },
   data () {
     return {
       page: 1, // 页面数
       oldPage: 1, // 记录页码数
-      pageList: [20, 50, 100, 200], // 每页展示多少条数据的集合
-      pageSize: 50 // 每页展示多少数据
+      pageSize: this.size,
+      pageList: [...this.list],
+      elements: [...this.els]
     }
   },
   watch: {
