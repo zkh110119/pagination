@@ -1,7 +1,7 @@
 <template>
   <ul class="zf-ui-pagination">
     <li>
-      <el-select v-model="pageSize" :size="'mini'" style="width: 72px;" @change="emitEvent">
+      <el-select v-model="pageSize" :size="'mini'" class="zf-ui-pagination-page-size" @change="changePageSize">
         <el-option v-for="size of pageSizes" :key="size" :label="size" :value="size"></el-option>
       </el-select>
     </li>
@@ -11,13 +11,14 @@
     <li>
       <el-link :underline="false" icon="el-icon-arrow-left" @click="prev"></el-link>
     </li>
-    <li><span>第</span></li>
+    <li><span class="zf-ui-pagination-page-text-prev">第</span></li>
     <li>
       <el-input-number v-model="page" @blur="pageBlur" @keyup.enter.native="changePage" :min="1"
-                       :max="totalPage" :size="'mini'" :controls="false" style="width: 48px;"></el-input-number>
+                       :max="totalPage" :size="'mini'" :controls="false"
+                       class="zf-ui-pagination-page"></el-input-number>
     </li>
     <li>
-      <span>/{{totalPage}}页</span>
+      <span class="zf-ui-pagination-page-text-next">/{{totalPage}}页</span>
     </li>
     <li>
       <el-link :underline="false" icon="el-icon-arrow-right" @click="next"></el-link>
@@ -91,11 +92,18 @@ export default {
         this.page = this.oldPage
       }
     },
+    changePageSize () {
+      if (this.page > this.totalPage) {
+        this.page = this.totalPage
+        this.oldPage = this.totalPage
+      }
+      this.emitEvent()
+    },
     pageBlur () {
       this.page = this.oldPage
     },
     emitEvent () {
-      this.$emit('changePageOrSize', {
+      this.$emit('pageOrSizeChange', {
         page: this.page,
         size: this.pageSize
       })
@@ -138,6 +146,22 @@ export default {
 
       * {
         vertical-align: top;
+      }
+
+      .zf-ui-pagination-page-size {
+        width: 72px;
+      }
+
+      .zf-ui-pagination-page {
+        width: 48px;
+      }
+
+      .zf-ui-pagination-page-text-prev {
+        padding: 0 4px;
+      }
+
+      .zf-ui-pagination-page-text-next {
+        padding: 0 4px;
       }
     }
   }

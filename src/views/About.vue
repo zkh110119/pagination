@@ -5,7 +5,7 @@
         <el-input-number v-model="total"></el-input-number>
       </el-main>
       <el-footer>
-        <zf-pagination :total="total" @changePageOrSize="changePageOrSize"></zf-pagination>
+        <zf-pagination :total="total" @pageOrSizeChange="pageOrSizeChange"></zf-pagination>
       </el-footer>
     </el-container>
   </div>
@@ -21,7 +21,7 @@ export default {
     }
   },
   methods: {
-    changePageOrSize (data) {
+    pageOrSizeChange (data) {
       console.log(data)
     }
   }
